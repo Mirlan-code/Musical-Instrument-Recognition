@@ -11,5 +11,7 @@ The Mel Spectrogram is the result of the following pipeline:
 3. Generate a Mel scale: Take the entire frequency spectrum, and separate it into n_mels=128 evenly spaced frequencies. And what do we mean by evenly spaced? not by distance on the frequency dimension, but distance as it is heard by the human ear.
 4. Generate Spectrogram: For each window, decompose the magnitude of the signal into its components, corresponding to the frequencies in the mel scale.
 
+### RMS
+Compute root-mean-square (RMS) value for each frame of the audiosignal
 
 Almir Mullanurov
