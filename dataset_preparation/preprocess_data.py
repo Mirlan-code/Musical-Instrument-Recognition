@@ -16,7 +16,11 @@ class Dataset:
         ]
         self.features = [
             "melspectogram",
-            "rms"
+            "rms",
+            "spectral_centroid",
+            "spectral_bandwidth",
+            "spectral_rolloff",
+            "zero_crossing_rate"
         ]
         self.dataset = {}
         self.train_path = "train.h5"
@@ -36,7 +40,11 @@ class Dataset:
                 try:
                     y, sr = librosa.load(os.path.join(instrument_path, track))
                     self.dataset["melspectogram"][instrument].append(librosa.amplitude_to_db(librosa.feature.melspectrogram(y, sr)))
-                    self.dataset["rms"][instrument].append(librosa.feature.rms(y=y))
+                    self.dataset["rms"][instrument].append(librosa.feature.rms(y))
+                    self.dataset["spectral_centroid"][instrument].append(librosa.feature.spectral_centroid(y, sr))
+                    self.dataset["spectral_bandwidth"][instrument].append(librosa.feature.spectral_bandwidth(y, sr))
+                    self.dataset["spectral_rolloff"][instrument].append(librosa.feature.spectral_rolloff(y, sr))
+                    self.dataset["zero_crossing_rate"][instrument].append(librosa.feature.zero_crossing_rate(y, sr))
                 except (KeyboardInterrupt, SystemExit):
                     raise
                 except:
@@ -72,38 +80,45 @@ class Dataset:
                                 f.write(str(difference[i][j]) + " ")
                             f.write("\n");
     
-    def compare_rms(self):
+    def compare_features_with_one_feature_array(self):
+        features_with_one_feature_array = [
+            "rms",
+            "spectral_centroid",
+            "spectral_bandwidth",
+            "spectral_rolloff",
+            "zero_crossing_rate"
+        ]
         import matplotlib.pyplot as plt
         with h5py.File(self.train_path, "r") as dataset:
-            for instrument in self.instruments:
-                data = dataset["rms-" + instrument]
-                average = np.average(data, axis=0)
-                print(average.shape)
-                for instrument2 in self.instruments:
-                    data2 = dataset["rms-" + instrument2]
-                    average2 = np.average(data2, axis=0)
-                    with open("feature_comparison/rms/" + instrument + "-" + instrument2, "w") as f:
-                        difference = average - average2
-                        for i in range(0, difference.shape[0]):
-                            for j in range(0, difference.shape[1]):
-                                f.write(str(difference[i][j]) + " ")
-                            f.write("\n");
-                        
-                        x_axis = [i for i in range (average.shape[1])]
-                        plt.plot(x_axis, average[0], alpha=0.25, label=instrument, color='green')
-                        plt.plot(x_axis, average2[0], alpha=0.25, label=instrument2, color='blue')
-                        plt.title("RMS")
-                        plt.legend()
-                        plt.savefig("feature_comparison/rms/" + instrument + "-" + instrument2 + ".png")
-                        plt.close()
-
+            for feature in features_with_one_feature_array:
+                for instrument in self.instruments:
+                    data = dataset[feature + "-" + instrument]
+                    average = np.average(data, axis=0)
+                    print(average.shape)
+                    for instrument2 in self.instruments:
+                        data2 = dataset[feature + "-" + instrument2]
+                        average2 = np.average(data2, axis=0)
+                        with open("feature_comparison/" + feature + "/" + instrument + "-" + instrument2, "w") as f:
+                            difference = average - average2
+                            for i in range(0, difference.shape[0]):
+                                for j in range(0, difference.shape[1]):
+                                    f.write(str(difference[i][j]) + " ")
+                                f.write("\n");
+                            
+                            x_axis = [i for i in range (average.shape[1])]
+                            plt.plot(x_axis, average[0], alpha=0.25, label=instrument, color='green')
+                            plt.plot(x_axis, average2[0], alpha=0.25, label=instrument2, color='blue')
+                            plt.title(feature)
+                            plt.legend()
+                            plt.savefig("feature_comparison/" + feature + "/" + instrument + "-" + instrument2 + ".png")
+                            plt.close()
 
 
 
 if __name__ == '__main__':
-    dataset = Dataset(path="dataset", reinitialize=False)
+    dataset = Dataset(path="dataset", reinitialize=True)
     dataset.compare_melspectogram()
-    dataset.compare_rms()
+    dataset.compare_features_with_one_feature_array()
     print("Nice")
                 
 
