@@ -73,6 +73,7 @@ class Dataset:
                             f.write("\n");
     
     def compare_rms(self):
+        import matplotlib.pyplot as plt
         with h5py.File(self.train_path, "r") as dataset:
             for instrument in self.instruments:
                 data = dataset["rms-" + instrument]
@@ -87,11 +88,20 @@ class Dataset:
                             for j in range(0, difference.shape[1]):
                                 f.write(str(difference[i][j]) + " ")
                             f.write("\n");
+                        
+                        x_axis = [i for i in range (average.shape[1])]
+                        plt.plot(x_axis, average[0], alpha=0.25, label=instrument, color='green')
+                        plt.plot(x_axis, average2[0], alpha=0.25, label=instrument2, color='blue')
+                        plt.title("RMS")
+                        plt.legend()
+                        plt.savefig("feature_comparison/rms/" + instrument + "-" + instrument2 + ".png")
+                        plt.close()
+
 
 
 
 if __name__ == '__main__':
-    dataset = Dataset(path="dataset", reinitialize=True)
+    dataset = Dataset(path="dataset", reinitialize=False)
     dataset.compare_melspectogram()
     dataset.compare_rms()
     print("Nice")
