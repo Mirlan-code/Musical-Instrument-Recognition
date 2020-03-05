@@ -12,7 +12,8 @@ class Dataset:
         self.instruments = [
             "pia",
             "gac",
-            "sax"
+            "sax",
+            "gel"
         ]
         self.features = [
             "melspectogram",

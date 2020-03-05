@@ -12,6 +12,6 @@ The Mel Spectrogram is the result of the following pipeline:
 4. Generate Spectrogram: For each window, decompose the magnitude of the signal into its components, corresponding to the frequencies in the mel scale.
 
 ### RMS
-Compute root-mean-square (RMS) value for each frame of the audiosignal
+Compute root-mean-square (RMS) value for each frame of the audiosignal (what is t). Разобраться со всеми фичами, что они означают
 
 Almir Mullanurov
