@@ -4,6 +4,7 @@ Musical Instrument Recognition DS Project
 Dataset to be used - IRMAS
 
 ## Preprocessing
+Filtering: tracks from the dataset which have some noise or other instruments on the background, were removed (i.e. for gac, pia).
 ### Mel Spectogram:
 The Mel Spectrogram is the result of the following pipeline:
 1. Separate to windows: Sample the input with windows of size n_fft=2048, making hops of size hop_length=512 each time to sample the next window.
