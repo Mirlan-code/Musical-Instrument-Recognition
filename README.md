@@ -4,7 +4,8 @@ Musical Instrument Recognition DS Project
 Dataset to be used - IRMAS
 
 ## Preprocessing
-Filtering: tracks from the dataset which have some noise or other instruments on the background, were removed (i.e. for gac, pia).
+Filtering: tracks from the dataset which have some noise or other instruments on the background, were removed (i.e. for gac, pia, sax).
+
 ### Mel Spectogram:
 The Mel Spectrogram is the result of the following pipeline:
 1. Separate to windows: Sample the input with windows of size n_fft=2048, making hops of size hop_length=512 each time to sample the next window.
@@ -13,6 +14,6 @@ The Mel Spectrogram is the result of the following pipeline:
 4. Generate Spectrogram: For each window, decompose the magnitude of the signal into its components, corresponding to the frequencies in the mel scale.
 
 ### RMS
-Compute root-mean-square (RMS) value for each frame of the audiosignal (what is t). Разобраться со всеми фичами, что они означают
+Compute root-mean-square (RMS) value for each frame of the audiosignal.
 
 Almir Mullanurov
