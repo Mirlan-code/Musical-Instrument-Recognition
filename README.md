@@ -1,7 +1,7 @@
 # Musical-Instrument-Recognition
 Musical Instrument Recognition DS Project
 
-Dataset to be used - IRMAS
+Dataset to be used - ((https://www.upf.edu/web/mtg/irmas IRMAS))
 
 ## Preprocessing
 Filtering: tracks from the dataset which have some noise or other instruments on the background, were removed (i.e. for gac, pia, sax).

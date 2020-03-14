@@ -1,5 +1,14 @@
 # folders
 IRMAS-TrainingData/
+IRMAS-TestingData-Part1/
+feature_comparison/
+__pycache__/
+venv/
+.vscode/
+Musical_Instrument_Recognition.egg-info/
 
 # src files
 .DS_Store
+*.h5
+.csv
+setup.py
