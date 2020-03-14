@@ -1,11 +1,13 @@
-from __future__ import print_function
 import librosa
-from pydub import AudioSegment
 import numpy as np
 import h5py
 import sys
 import os
+import itertools
+
+from pydub import AudioSegment
 from collections import defaultdict
+
 
 class Dataset:
     def __init__(self, path:str, reinitialize:bool):
@@ -29,6 +31,7 @@ class Dataset:
             self.SaveTrainData(path)
 
     def SaveTrainData(self, path:str):
+        tracks_count = 0
         for feature in self.features:
             self.dataset[feature] = defaultdict(list)
 
@@ -37,7 +40,6 @@ class Dataset:
             tracks = os.listdir(instrument_path)
             count = 0
             for track in tracks:
-                count += 1
                 try:
                     y, sr = librosa.load(os.path.join(instrument_path, track))
                     self.dataset["melspectogram"][instrument].append(librosa.amplitude_to_db(librosa.feature.melspectrogram(y, sr)))
@@ -46,13 +48,15 @@ class Dataset:
                     self.dataset["spectral_bandwidth"][instrument].append(librosa.feature.spectral_bandwidth(y, sr))
                     self.dataset["spectral_rolloff"][instrument].append(librosa.feature.spectral_rolloff(y, sr))
                     self.dataset["zero_crossing_rate"][instrument].append(librosa.feature.zero_crossing_rate(y, sr))
+                    count += 1
                 except (KeyboardInterrupt, SystemExit):
                     raise
                 except:
                     print("Missed " + track)
             
             print(instrument + " has " + str(count) + " tracks")
-        
+            tracks_count += count
+                
         train_file = h5py.File(self.train_path, "w")
         for feature in self.features:
             for instrument in self.instruments:
@@ -60,10 +64,33 @@ class Dataset:
                 train_file.create_dataset(feature + "-" + instrument, data=np.asarray(self.dataset[feature][instrument]))
         
         train_file.attrs["vector_size"] = (128, 130)
+        train_file.attrs["tracks_count"] = tracks_count
         train_file.close()
     
-    def __call__(self):
-        print("call")
+    def __call__(self, features):
+        with h5py.File(self.train_path, "r") as dataset:
+            X = []
+            Y = []
+            XY_assigned = False
+            
+            for feature in features:
+                i = 0
+                for instrument in self.instruments:
+                    data = dataset[feature + "-" + instrument]
+                    for track_features in data:
+                        if not XY_assigned:    
+                            X.append(track_features.flatten())
+                            Y.append(instrument)
+                        else:
+                            X[i] = np.append(X[i], track_features.flatten())
+                            i += 1
+                XY_assigned = True
+
+            X = np.asarray(X)
+            Y = np.asarray(Y)
+            assert(X.shape[0] == Y.shape[0])
+            return X, Y
+
 
     def compare_melspectogram(self):
         with h5py.File(self.train_path, "r") as dataset:
@@ -81,6 +108,7 @@ class Dataset:
                                 f.write(str(difference[i][j]) + " ")
                             f.write("\n");
     
+
     def compare_features_with_one_feature_array(self):
         features_with_one_feature_array = [
             "rms",
@@ -115,9 +143,8 @@ class Dataset:
                             plt.close()
 
 
-
 if __name__ == '__main__':
-    dataset = Dataset(path="dataset", reinitialize=True)
+    dataset = Dataset(path="dataset", reinitialize=False)
     dataset.compare_melspectogram()
     dataset.compare_features_with_one_feature_array()
     print("Nice")
