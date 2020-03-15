@@ -3,6 +3,10 @@ Musical Instrument Recognition DS Project
 
 Dataset to be used - [IRMAS](https://www.upf.edu/web/mtg/irmas)
 
+## Instruments
+1. First iteration: gac, pia, sax
+2. Added gel
+
 ## Preprocessing
 Filtering: tracks from the dataset which have some noise or other instruments on the background, were removed (i.e. for gac, pia, sax).
 

@@ -12,10 +12,10 @@ from collections import defaultdict
 class Dataset:
     def __init__(self, path:str, reinitialize:bool):
         self.instruments = [
-            "pia",
             "gac",
+            "pia",
             "sax",
-            "gel"
+            # "gel"
         ]
         self.features = [
             "melspectogram",
