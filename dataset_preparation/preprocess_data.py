@@ -42,7 +42,7 @@ class Dataset:
             for track in tracks:
                 try:
                     y, sr = librosa.load(os.path.join(instrument_path, track))
-                    self.dataset["melspectogram"][instrument].append(librosa.amplitude_to_db(librosa.feature.melspectrogram(y, sr)))
+                    self.dataset["melspectogram"][instrument].append(librosa.feature.melspectrogram(y, sr))
                     self.dataset["rms"][instrument].append(librosa.feature.rms(y))
                     self.dataset["spectral_centroid"][instrument].append(librosa.feature.spectral_centroid(y, sr))
                     self.dataset["spectral_bandwidth"][instrument].append(librosa.feature.spectral_bandwidth(y, sr))
@@ -148,5 +148,3 @@ if __name__ == '__main__':
     dataset.compare_melspectogram()
     dataset.compare_features_with_one_feature_array()
     print("Nice")
-                
-
