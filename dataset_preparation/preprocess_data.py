@@ -18,12 +18,24 @@ class Dataset:
             # "gel"
         ]
         self.features = [
+            "chroma_stft",
+            "chroma_cqt",
+            "chroma_cens",
             "melspectogram",
             "rms",
-            "spectral_centroid",
             "spectral_bandwidth",
+            "spectral_centroid",
+            "spectral_contrast",
+            "spectral_flatness",
             "spectral_rolloff",
-            "zero_crossing_rate"
+            "poly_features",
+            "tonnetz",
+            "zero_crossing_rate",
+
+            "tempogram",
+            "fourier_tempogram",
+             
+            "track"
         ]
         self.dataset = {}
         self.train_path = "train.h5"
@@ -42,12 +54,24 @@ class Dataset:
             for track in tracks:
                 try:
                     y, sr = librosa.load(os.path.join(instrument_path, track))
+
+                    self.dataset["chroma_stft"][instrument].append(librosa.feature.chroma_stft(y, sr))
+                    self.dataset["chroma_cqt"][instrument].append(librosa.feature.chroma_cqt(y, sr))
+                    self.dataset["chroma_cens"][instrument].append(librosa.feature.chroma_cens(y, sr))                 
                     self.dataset["melspectogram"][instrument].append(librosa.feature.melspectrogram(y, sr))
                     self.dataset["rms"][instrument].append(librosa.feature.rms(y))
                     self.dataset["spectral_centroid"][instrument].append(librosa.feature.spectral_centroid(y, sr))
                     self.dataset["spectral_bandwidth"][instrument].append(librosa.feature.spectral_bandwidth(y, sr))
+                    self.dataset["spectral_contrast"][instrument].append(librosa.feature.spectral_contrast(y, sr))
+                    self.dataset["spectral_flatness"][instrument].append(librosa.feature.spectral_flatness(y))
                     self.dataset["spectral_rolloff"][instrument].append(librosa.feature.spectral_rolloff(y, sr))
+                    self.dataset["poly_features"][instrument].append(librosa.feature.poly_features(y, sr))
+                    self.dataset["tonnetz"][instrument].append(librosa.feature.tonnetz(y, sr))
                     self.dataset["zero_crossing_rate"][instrument].append(librosa.feature.zero_crossing_rate(y, sr))
+                    self.dataset["tempogram"][instrument].append(librosa.feature.tempogram(y, sr))
+                    self.dataset["fourier_tempogram"][instrument].append(librosa.feature.tempogram(y, sr))
+                    self.dataset["track"][instrument].append(y)
+
                     count += 1
                 except (KeyboardInterrupt, SystemExit):
                     raise
@@ -63,17 +87,18 @@ class Dataset:
                 print(feature + "-" + instrument)
                 train_file.create_dataset(feature + "-" + instrument, data=np.asarray(self.dataset[feature][instrument]))
         
-        train_file.attrs["vector_size"] = (128, 130)
         train_file.attrs["tracks_count"] = tracks_count
         train_file.close()
     
-    def __call__(self, features):
+    def __call__(self, features, _2d = False):
         with h5py.File(self.train_path, "r") as dataset:
             X = []
             Y = []
             XY_assigned = False
             
             for feature in features:
+                if feature not in self.features:
+                    continue
                 i = 0
                 for instrument in self.instruments:
                     data = dataset[feature + "-" + instrument]
@@ -86,6 +111,10 @@ class Dataset:
                             i += 1
                 XY_assigned = True
 
+            if _2d:
+                for i in range(len(X)):
+                    X[i] = np.reshape(X[i], (-1, 130))
+                    
             X = np.asarray(X)
             Y = np.asarray(Y)
             assert(X.shape[0] == Y.shape[0])

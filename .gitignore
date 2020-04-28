@@ -6,6 +6,7 @@ __pycache__/
 venv/
 .vscode/
 Musical_Instrument_Recognition.egg-info/
+cnn_models/
 
 # src files
 .DS_Store

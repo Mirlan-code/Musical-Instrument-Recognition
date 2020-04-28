@@ -3,3 +3,5 @@ matplotlib
 librosa
 h5py
 pydub
+torch
+torchvision
