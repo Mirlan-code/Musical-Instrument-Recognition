@@ -8,9 +8,10 @@ from dataset_preparation.preprocess_data import Dataset
 from sklearn.model_selection import train_test_split
 
 LABELS_TO_NUMBERS = {
-    "gac" : 0,
-    "pia" : 1,
-    "sax" : 2
+	"bas" : 0,
+    "gac" : 1,
+    "key" : 2,
+    "org" : 3
 }
 
 
@@ -139,7 +140,7 @@ def yololike_model(features, labels, mode):
 
 
 def cnn(dataset, features):
-    instruments = 3
+    instruments = 4
     X, Y = dataset(features, False)
     print(X.shape)
     print(Y.shape)
@@ -169,7 +170,7 @@ def cnn(dataset, features):
     print(X_train.shape)
     print(Y_train.shape)
 
-    X_train = X_train.reshape(1057, feature_size, 1)
+    X_train = X_train.reshape(1900, feature_size, 1)
     X_test = X_test.reshape(len(X_test), feature_size, 1)
     
     model = tf.keras.Sequential([
@@ -186,7 +187,7 @@ def cnn(dataset, features):
         tf.keras.layers.Dense(units=100, activation='relu'),
         tf.keras.layers.Dense(units=200, activation='relu'),
 
-        tf.keras.layers.Dense(units=3, activation='softmax')
+        tf.keras.layers.Dense(units=4, activation='softmax')
     ])
     model.compile('adam', loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
@@ -206,8 +207,8 @@ if __name__ == "__main__":
         # "chroma_stft",
         # "chroma_cqt",
         # "chroma_cens",
-        "melspectogram",
-        # "rms",
+        # "melspectogram",
+        "rms",
         # "spectral_centroid",
         # "spectral_bandwidth",
         # "spectral_contrast",
@@ -217,7 +218,7 @@ if __name__ == "__main__":
         # "tonnetz",
         # "zero_crossing_rate",
 
-        # "tempogram",
+        "tempogram",
         # "fourier_tempogram",
         # "track"
     ]

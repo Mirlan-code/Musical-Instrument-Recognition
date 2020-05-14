@@ -12,10 +12,10 @@ from collections import defaultdict
 class Dataset:
     def __init__(self, path:str, reinitialize:bool):
         self.instruments = [
+            "bas",
             "gac",
-            "pia",
-            "sax",
-            # "gel"
+            "key",
+            "org"
         ]
         self.features = [
             "chroma_stft",
@@ -73,6 +73,8 @@ class Dataset:
                     self.dataset["track"][instrument].append(y)
 
                     count += 1
+                    if count == 1000:
+                        break
                 except (KeyboardInterrupt, SystemExit):
                     raise
                 except:
