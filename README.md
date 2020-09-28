@@ -107,11 +107,3 @@ The Fourier Tempogram is basically the short-time Fourier transform of the onset
 
 ## Random Forest
 After reading some articles I decided to try random forest to recognize the instruments and accuracy became much higher - 0.77
-
-
-1. поэкспериментировать с фичами
-2. Выбрать лучший
-3. На каких треках падает модель??
-4. С чем это связано?
-
-Almir Mullanurov
